@@ -1,0 +1,86 @@
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;numeric&gt;
+using namespace std;
+
+class Student
+{
+public:
+string name;
+int mark;
+char grade;
+};
+
+int main()
+{
+vector&lt;Student&gt; students = {
+{&quot;Arun&quot;, 85, &#39; &#39;},
+{&quot;Bala&quot;, 72, &#39; &#39;},
+{&quot;Kumar&quot;, 91, &#39; &#39;},
+{&quot;Ravi&quot;, 65, &#39; &#39;}
+};
+
+// Sort students based on marks
+sort(students.begin(), students.end(),
+[](Student a, Student b)
+{
+return a.mark &gt; b.mark;
+});
+
+// Assign grades using transform
+transform(students.begin(), students.end(),
+students.begin(),
+[](Student s)
+{
+if (s.mark &gt;= 90)
+s.grade = &#39;A&#39;;
+else if (s.mark &gt;= 75)
+s.grade = &#39;B&#39;;
+else if (s.mark &gt;= 50)
+s.grade = &#39;C&#39;;
+else
+s.grade = &#39;F&#39;;
+
+return s;
+});
+// Find first student scoring above 80
+auto it = find_if(students.begin(), students.end(),
+[](Student s)
+{
+return s.mark &gt; 80;
+});
+
+// Calculate total marks using accumulate
+int total = accumulate(students.begin(), students.end(), 0,
+[](int sum, Student s)
+{
+return sum + s.mark;
+});
+
+float average = (float)total / students.size();
+
+// Display results
+cout &lt;&lt; &quot;Student Grade Analyzer\n&quot;;
+cout &lt;&lt; &quot;---------------------\n&quot;;
+
+cout &lt;&lt; &quot;Name\tMark\tGrade\n&quot;;
+
+for (Student s : students)
+{
+cout &lt;&lt; s.name &lt;&lt; &quot;\t&quot;
+&lt;&lt; s.mark &lt;&lt; &quot;\t&quot;
+&lt;&lt; s.grade &lt;&lt; endl;
+}
+
+if (it != students.end())
+{
+cout &lt;&lt; &quot;\nFirst student scoring above 80: &quot;
+&lt;&lt; it-&gt;name &lt;&lt; endl;
+}
+
+cout &lt;&lt; &quot;Total Marks: &quot; &lt;&lt; total &lt;&lt; endl;
+cout &lt;&lt; &quot;Average Mark: &quot; &lt;&lt; average &lt;&lt; endl;
+
+return 0;
+}
