@@ -1,0 +1,86 @@
+#include &lt;iostream&gt;
+#include &lt;memory&gt;
+using namespace std;
+
+// Resource class
+class Resource
+{
+public:
+Resource()
+{
+cout &lt;&lt; &quot;Resource acquired&quot; &lt;&lt; endl;
+}
+~Resource()
+{
+cout &lt;&lt; &quot;Resource released&quot; &lt;&lt; endl;
+}
+
+void use()
+{
+cout &lt;&lt; &quot;Resource is being used&quot; &lt;&lt; endl;
+}
+};
+
+// Manual Smart Pointer using RAII
+class MySmartPointer
+{
+private:
+Resource* ptr;
+
+public:
+MySmartPointer(Resource* p)
+{
+ptr = p;
+}
+
+~MySmartPointer()
+{
+delete ptr;
+cout &lt;&lt; &quot;Manual smart pointer destroyed&quot; &lt;&lt; endl;
+}
+
+Resource* operator-&gt;()
+{
+return ptr;
+}
+
+// Disable copying to avoid double deletion
+MySmartPointer(const MySmartPointer&amp;) = delete;
+MySmartPointer&amp; operator=(const MySmartPointer&amp;) = delete;
+};
+
+int main()
+{
+cout &lt;&lt; &quot;----- Manual RAII Smart Pointer -----&quot; &lt;&lt; endl;
+
+{
+MySmartPointer smartPtr(new Resource());
+smartPtr-&gt;use();
+}
+
+cout &lt;&lt; &quot;\n----- unique_ptr -----&quot; &lt;&lt; endl;
+
+{
+unique_ptr&lt;Resource&gt; uniquePtr =
+make_unique&lt;Resource&gt;();
+
+uniquePtr-&gt;use();
+}
+
+cout &lt;&lt; &quot;\n----- shared_ptr -----&quot; &lt;&lt; endl;
+
+{
+shared_ptr&lt;Resource&gt; sharedPtr1 =
+make_shared&lt;Resource&gt;();
+shared_ptr&lt;Resource&gt; sharedPtr2 = sharedPtr1;
+
+sharedPtr1-&gt;use();
+
+cout &lt;&lt; &quot;Shared Pointer Count: &quot;
+&lt;&lt; sharedPtr1.use_count() &lt;&lt; endl;
+}
+
+cout &lt;&lt; &quot;\nProgram completed successfully.&quot; &lt;&lt; endl;
+
+return 0;
+}
